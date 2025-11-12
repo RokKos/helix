@@ -36,6 +36,17 @@ pub use tree_house::{
     Error as HighlighterError, LanguageLoader, TreeCursor, TREE_SITTER_MATCH_LIMIT,
 };
 
+
+    /// The Grammar query for Sticky Context
+    #[serde(skip)]
+    pub(crate) context_query: OnceCell<Option<ContextQuery>>,
+
+    /// Automatic insertion of pairs to parentheses, brackets,
+    /// etc. Defaults to true. Optionally, this can be a list of 2-tuples
+    /// to specify a list of characters to pair. This overrides the
+    /// global setting.
+    #[serde(default, skip_serializing, deserialize_with = "deserialize_auto_pairs")]
+    pub auto_pairs: Option<AutoPairs>,
 #[derive(Debug)]
 pub struct LanguageData {
     config: Arc<LanguageConfiguration>,
@@ -975,6 +986,11 @@ impl OverlayHighlighter {
                 .skip(start),
         )
     }
+}
+
+#[derive(Debug)]
+pub struct ContextQuery {
+    pub query: Query,
 }
 
 #[derive(Debug)]
